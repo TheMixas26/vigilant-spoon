@@ -1,0 +1,23 @@
+.startings {
+    position: center;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 5%;
+}
+.links {
+    display: block;
+    margin-left: 10%;
+    font-size: larger;
+}
+.up {
+    text-align: center;
+    font-size: 250%;
+    margin-bottom: 0;
+}
+.bot {
+    text-align: center;
+    font-size: medium;
+    margin-top: 0;
+    margin-bottom: 5%;
+}
