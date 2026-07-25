@@ -1,23 +1,127 @@
-.startings {
-    position: center;
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+ 
+:root {
+    --bg:        #1a1a1a;
+    --surface:   #242424;
+    --border:    rgba(255, 255, 255, 0.08);
+    --text:      rgba(255, 255, 255, 0.82);
+    --text-dim:  rgba(255, 255, 255, 0.40);
+    --accent:    rgba(255, 255, 255, 0.90);
+}
+ 
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+ 
+/* Частицы — всегда за контентом */
+#particles-js {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+ 
+/* Весь контент поверх частиц */
+.container {
+    position: relative;
+    z-index: 1;
+    width: min(640px, 90vw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 3rem 0;
+    animation: fadeUp 1s ease both;
+}
+ 
+/* Заголовок */
+.hero {
     text-align: center;
-    margin-left: 10%;
-    margin-right: 10%;
-    margin-bottom: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
 }
-.links {
-    display: block;
-    margin-left: 10%;
-    font-size: larger;
+ 
+.title {
+    font-family: 'Cormorant Garant', serif;
+    font-weight: 700;
+    font-size: clamp(3.5rem, 10vw, 5.5rem);
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    line-height: 1;
 }
-.up {
+ 
+.subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: lowercase;
+    color: var(--text-dim);
+}
+ 
+/* Текст */
+.greeting {
     text-align: center;
-    font-size: 250%;
-    margin-bottom: 0;
+    font-size: 0.95rem;
+    line-height: 1.85;
+    color: var(--text);
+    max-width: 520px;
 }
-.bot {
-    text-align: center;
-    font-size: medium;
-    margin-top: 0;
-    margin-bottom: 5%;
+ 
+/* Кнопки */
+.nav {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
+ 
+.nav-btn {
+    display: inline-block;
+    padding: 1rem 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.90);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.10em;
+    text-decoration: none;
+    text-transform: lowercase;
+    transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+ 
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #fff;
+}
+ 
+/* Анимация появления */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+ 
+/* Уважаем prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .container { animation: none; }
+}
+ 

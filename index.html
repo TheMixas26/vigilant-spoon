@@ -1,22 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой дорогой чай</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <p class="up">ЧАЙТ</p>
-    <p class="bot">(сайт для чая)</p>
 </head>
 <body>
-    <p class="startings">
-        Здравствуйте, мой дорогой чай! Этот сайт я создал с одной единственной целью - завставить вас улыбнуться) Ваша улыбка для меня значит очень и очень многое, именно поэтому я так часто вспоминаю о вашем Солнышке... Я постарался над этим сайтом довольно таки много, так что надеюсь, он вам понравится!) Приступим)
-    </p>
-    <a class="links" href="galery.html">Галерея</a>
-    <a class="links" href="poems.html">Стихи</a>
-
-    <p class="compliment">
-
-    </p>
+ 
+    <div id="particles-js"></div>
+ 
+    <main class="container">
+        <header class="hero">
+            <h1 class="title">ЧАЙТ</h1>
+            <p class="subtitle">сайт для чая</p>
+        </header>
+ 
+        <p class="greeting">
+            Здравствуйте, мой дорогой чай! Этот сайт я создал с одной единственной целью —
+            заставить вас улыбнуться. Ваша улыбка для меня значит очень и очень многое,
+            именно поэтому я так часто вспоминаю о вашем Солнышке.
+            Я постарался над этим сайтом довольно много, так что надеюсь, он вам понравится!
+        </p>
+ 
+        <nav class="nav">
+            <a class="nav-btn" href="galery.html">Галерея</a>
+            <a class="nav-btn" href="poems.html">Стихи</a>
+        </nav>
+    </main>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1/tsparticles.min.js"></script>
+    <script>
+        tsParticles.load("particles-js", {
+            particles: {
+                number: { value: 120 },
+                size: { value: 1 },
+                color: { value: "#ffffff" },
+                opacity: { value: 0.3 },
+                move: {
+                    enable: true,
+                    speed: 0.3,
+                    direction: "none",
+                    random: false,
+                    straight: false
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#ffffff",
+                    opacity: 0.15,
+                    width: 1
+                }
+            }
+        });
+    </script>
 </body>
 </html>

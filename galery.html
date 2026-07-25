@@ -1,12 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Галерея!</title>
+    <title>Галерея — Чайт</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="gal_style.css">
 </head>
 <body>
-    
+ 
+    <div id="particles-js"></div>
+ 
+    <main class="container">
+        <header class="hero">
+            <a class="back" href="index.html">← чайт</a>
+            <h1 class="title">Галерея</h1>
+            <p class="subtitle">ваших фотографий</p>
+        </header>
+ 
+        <div class="grid" id="gallery">
+            <div class="cell">
+                <img src="фото.jpg" alt="подпись">
+            </div>
+            <!-- ─────────────────────────────────────────
+                 Чтобы добавить фото — скопируй блок ниже
+                 и вставь его следующим в сетку.
+                 Замени src на путь к своей картинке,
+                 alt — на подпись (необязательно).
+ 
+                 <div class="cell">
+                     <img src="фото.jpg" alt="подпись">
+                 </div>
+            ───────────────────────────────────────── -->
+ 
+        </div>
+ 
+        <p class="empty-hint" id="emptyHint">
+            Пока здесь пусто.<br>Добавь фотографии в HTML — и они появятся здесь.
+        </p>
+    </main>
+ 
+    <!-- Лайтбокс -->
+    <div class="lightbox" id="lightbox" hidden>
+        <button class="lb-close" id="lbClose" aria-label="Закрыть">×</button>
+        <button class="lb-nav lb-prev" id="lbPrev" aria-label="Назад">‹</button>
+        <div class="lb-img-wrap">
+            <img class="lb-img" id="lbImg" src="" alt="">
+        </div>
+        <button class="lb-nav lb-next" id="lbNext" aria-label="Вперёд">›</button>
+        <div class="lb-bar">
+            <span class="lb-caption" id="lbCaption"></span>
+            <a class="lb-download" id="lbDownload" download>↓ скачать</a>
+        </div>
+    </div>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1/tsparticles.min.js"></script>
+    <script>
+        // Частицы
+        tsParticles.load("particles-js", {
+            particles: {
+                number: { value: 120 },
+                size: { value: 1 },
+                color: { value: "#ffffff" },
+                opacity: { value: 0.3 },
+                move: { enable: true, speed: 0.3, direction: "none" },
+                line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.15, width: 1 }
+            }
+        });
+ 
+        // ── Галерея ──────────────────────────────────────
+        const gallery  = document.getElementById('gallery');
+        const hint     = document.getElementById('emptyHint');
+        const cells    = () => [...gallery.querySelectorAll('.cell img')];
+ 
+        function updateHint() {
+            hint.hidden = cells().length > 0;
+        }
+        updateHint();
+ 
+        // Клик по картинке → открыть лайтбокс
+        gallery.addEventListener('click', e => {
+            const img = e.target.closest('.cell img');
+            if (!img) return;
+            openLightbox(cells().indexOf(img));
+        });
+ 
+        // ── Лайтбокс ─────────────────────────────────────
+        const lightbox   = document.getElementById('lightbox');
+        const lbImg      = document.getElementById('lbImg');
+        const lbCaption  = document.getElementById('lbCaption');
+        const lbDownload = document.getElementById('lbDownload');
+        const lbClose    = document.getElementById('lbClose');
+        const lbPrev     = document.getElementById('lbPrev');
+        const lbNext     = document.getElementById('lbNext');
+ 
+        let current = 0;
+ 
+        function openLightbox(index) {
+            current = index;
+            renderLightbox();
+            lightbox.hidden = false;
+            document.body.style.overflow = 'hidden';
+            lightbox.focus();
+        }
+ 
+        function closeLightbox() {
+            lightbox.hidden = true;
+            document.body.style.overflow = '';
+        }
+ 
+        function renderLightbox() {
+            const imgs = cells();
+            if (!imgs.length) return;
+            const img = imgs[current];
+            lbImg.src        = img.src;
+            lbImg.alt        = img.alt;
+            lbCaption.textContent = img.alt || '';
+            lbDownload.href  = img.src;
+ 
+            // Стрелки: показываем только если есть куда идти
+            lbPrev.style.visibility = current > 0 ? 'visible' : 'hidden';
+            lbNext.style.visibility = current < imgs.length - 1 ? 'visible' : 'hidden';
+        }
+ 
+        function go(dir) {
+            const len = cells().length;
+            current = (current + dir + len) % len;
+            renderLightbox();
+        }
+ 
+        lbClose.addEventListener('click', closeLightbox);
+        lbPrev.addEventListener('click', () => go(-1));
+        lbNext.addEventListener('click', () => go(1));
+ 
+        // Клик на фон = закрыть
+        lightbox.addEventListener('click', e => {
+            if (e.target === lightbox || e.target.classList.contains('lb-img-wrap')) closeLightbox();
+        });
+ 
+        // Клавиатура
+        document.addEventListener('keydown', e => {
+            if (lightbox.hidden) return;
+            if (e.key === 'Escape')      closeLightbox();
+            if (e.key === 'ArrowLeft')   go(-1);
+            if (e.key === 'ArrowRight')  go(1);
+        });
+ 
+        // Свайп на мобиле
+        let touchStartX = 0;
+        lightbox.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+        lightbox.addEventListener('touchend',   e => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+        });
+    </script>
 </body>
 </html>
+ 
