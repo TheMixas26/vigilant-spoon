@@ -88,26 +88,35 @@
         // репозитории как бессмысленный бинарный .enc-файл —
         // расшифровывается только в памяти браузера, в файл
         // на диск ничего не сохраняется.
+        async function decryptOne(key, item) {
+            const resp = await fetch('photos/' + item.file);
+            const buf = await resp.arrayBuffer();
+            const plain = await AUTH.decryptBuffer(key, buf);
+            const blob = new Blob([plain], { type: item.mime });
+            return URL.createObjectURL(blob);
+        }
+
         async function renderGallery(key) {
             const manifestResp = await fetch('photos/manifest.json');
             if (!manifestResp.ok) return; // фото ещё не добавлены — ничего страшного
             const manifest = await manifestResp.json();
 
-            for (const item of manifest) {
-                const resp = await fetch('photos/' + item.file);
-                const buf = await resp.arrayBuffer();
-                const plain = await AUTH.decryptBuffer(key, buf);
-                const blob = new Blob([plain], { type: item.mime });
-                const url = URL.createObjectURL(blob);
+            // Качаем и расшифровываем все фото параллельно —
+            // это сильно быстрее последовательной загрузки.
+            // Порядок в галерее при этом сохраняется: ждём весь
+            // Promise.all и добавляем ячейки строго по порядку
+            // манифеста, а не по тому, кто расшифровался первым.
+            const urls = await Promise.all(manifest.map(item => decryptOne(key, item)));
 
+            manifest.forEach((item, i) => {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 const img = document.createElement('img');
-                img.src = url;
+                img.src = urls[i];
                 img.alt = item.alt || '';
                 cell.appendChild(img);
                 gallery.appendChild(cell);
-            }
+            });
         }
 
         // Клик по картинке → открыть лайтбокс
