@@ -1,0 +1,5 @@
+{
+  "saltHex": "9d53207141e608bb0903e6905f23e342",
+  "iterations": 300000,
+  "verifyFile": "verify.enc"
+}

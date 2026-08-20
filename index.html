@@ -1,61 +1,103 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой дорогой чай</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мой дорогой чай</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="auth-style.css">
 </head>
 <body>
- 
-    <div id="particles-js"></div>
- 
-    <main class="container">
-        <header class="hero">
-            <h1 class="title">ЧАЙТ</h1>
-            <p class="subtitle">сайт для чая</p>
-        </header>
- 
-        <p class="greeting">
+<div id="particles-js"></div>
+
+<div id="auth-overlay" class="auth-overlay">
+    <form id="auth-form" class="auth-form">
+        <p class="auth-label">Введите пароль</p>
+        <input id="auth-password" type="password" autocomplete="current-password" required autofocus>
+        <button type="submit">Войти</button>
+        <p id="auth-error" class="auth-error"></p>
+    </form>
+</div>
+<button id="auth-logout" class="auth-logout" hidden>🔒 выйти</button>
+
+<div id="page-content" hidden>
+<main class="container">
+<header class="hero">
+<h1 class="title">ЧАЙТ</h1>
+<p class="subtitle">сайт для чая</p>
+</header>
+<p class="greeting">
             Здравствуйте, мой дорогой чай! Этот сайт я создал с одной единственной целью —
             заставить вас улыбнуться. Ваша улыбка для меня значит очень и очень многое,
             именно поэтому я так часто вспоминаю о вашем Солнышке.
             Я постарался над этим сайтом довольно много, так что надеюсь, он вам понравится!
-        </p>
- 
-        <nav class="nav">
-            <a class="nav-btn" href="galery.html">Галерея</a>
-            <a class="nav-btn" href="poems.html">Стихи</a>
-        </nav>
-    </main>
- 
-    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1/tsparticles.min.js"></script>
-    <script>
-        tsParticles.load("particles-js", {
-            particles: {
-                number: { value: 120 },
-                size: { value: 1 },
-                color: { value: "#ffffff" },
-                opacity: { value: 0.3 },
-                move: {
-                    enable: true,
-                    speed: 0.3,
-                    direction: "none",
-                    random: false,
-                    straight: false
-                },
-                line_linked: {
-                    enable: true,
-                    distance: 150,
-                    color: "#ffffff",
-                    opacity: 0.15,
-                    width: 1
-                }
-            }
-        });
-    </script>
+</p>
+<nav class="nav">
+<a class="nav-btn" href="galery.html">Галерея</a>
+<a class="nav-btn" href="poems.html">Стихи</a>
+</nav>
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@1/tsparticles.min.js"></script>
+<script src="auth.js"></script>
+<script>
+tsParticles.load("particles-js", {
+    particles: {
+        number: { value: 120 },
+        size: { value: 1 },
+        color: { value: "#ffffff" },
+        opacity: { value: 0.3 },
+        move: {
+            enable: true,
+            speed: 0.3,
+            direction: "none",
+            random: false,
+            straight: false
+        },
+        line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#ffffff",
+            opacity: 0.15,
+            width: 1
+        }
+    }
+});
+
+function applyGreeting() {
+    const today = new Date();
+    const greetingEl = document.querySelector('.greeting');
+    let greetingText = greetingEl.textContent; // было greetingEl.textContent() — лишние скобки ломали скрипт
+
+    // 21 августа
+    if (today.getDate() === 21 && today.getMonth() === 7) {
+
+        if (today.getFullYear() === 2026) {
+            // Поздравления 2026 года
+            greetingText = `
+                С днём рождения, мой дорогой Чай! 🎉<br><br>
+                Вы уже видели основное поздравление, я полагаю, так что не буду расягивать "хронометраж" моего поздравления.<br><br>
+                Просто знайте - вы самая крутая персона из всех, кого я знаю. Надеюсь, вы про меня не позабудете..))
+            `;
+        }
+
+        if (today.getFullYear() === 2027) {
+            // Поздравления 2027 года
+            greetingText = `
+                Эх, ну вот и уже целый год прошёл...
+            `;
+        }
+
+        greetingEl.innerHTML = greetingText;
+    }
+}
+
+applyGreeting();
+initGate();
+</script>
 </body>
 </html>

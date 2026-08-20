@@ -8,27 +8,39 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="poems_style.css">
+    <link rel="stylesheet" href="auth-style.css">
 </head>
 <body>
- 
+
     <div id="particles-js"></div>
- 
+
+    <div id="auth-overlay" class="auth-overlay">
+        <form id="auth-form" class="auth-form">
+            <p class="auth-label">Введите пароль</p>
+            <input id="auth-password" type="password" autocomplete="current-password" required autofocus>
+            <button type="submit">Войти</button>
+            <p id="auth-error" class="auth-error"></p>
+        </form>
+    </div>
+    <button id="auth-logout" class="auth-logout" hidden>🔒 выйти</button>
+
+    <div id="page-content" hidden>
     <main class="container">
         <header class="hero">
             <a class="back" href="index.html">← чайт</a>
             <h1 class="title">Стихи</h1>
             <p class="subtitle">и прочее письменное</p>
         </header>
- 
+
         <section class="poems">
- 
+
             <!-- ─────────────────────────────────────────
                  Чтобы добавить новый стих — скопируй
                  блок <article class="poem"> ... </article>
                  и вставь его ПЕРЕД остальными.
                  Больше ничего менять не нужно.
             ───────────────────────────────────────── -->
- 
+
             <article class="poem">
                 <button class="poem-toggle" aria-expanded="false">
                     <span class="poem-title">Осознание</span>
@@ -36,10 +48,12 @@
                 </button>
                 <div class="poem-body" hidden>
                     <p class="poem-text">
+                        <b>КОММЕНТАРИЙ:</b> <i>Мдаа, вот перечитываю я его спустя всё это время и просто шокируюсь... Во-первых, мне не он не нравится) Рифма чересчур местами хромает, слова банальные, образа нет никакого... В общем, я вас уверяю, теперь я пишу сильно лучше) Надеюсь, лапки у меня всё же дойдут и я добавлю сюда новые, а главное, качественные стихи! А для начала их нужно хотя бы написать...</i>
+
                         Утром потихоньку снова просыпаюсь
                         И полностью происходящее осознаю
                         Сейчас всю мысль выложить стихом пытаюсь
-                        И Куликовой после покажу
+                        Надеюсь, никому его не покажу
                         
                         В мыслях сейчас только она
                         И взгляд не могу отвести никуда
@@ -50,7 +64,7 @@
                         Чтоб понимать, что нравится ей больше
                         И хочется себя мне поскорей понять
                         Иначе повторю судьбу дурацкой Польши
-                        
+                         
                         Как мог в другую быстро так влюбиться?
                         Как мог рассчитывать бездумно на взаимность я?
                         Не помешало бы сейчас мне как-нибудь забыться
@@ -78,7 +92,7 @@
                     </p>
                 </div>
             </article>
- 
+
             <article class="poem">
                 <button class="poem-toggle" aria-expanded="false">
                     <span class="poem-title">Первый стих, посвящённый вам</span>
@@ -86,6 +100,8 @@
                 </button>
                 <div class="poem-body" hidden>
                     <p class="poem-text">
+                        <b>КОММЕНТАРИЙ:</b> <i>А этот, напротив, мною горячо любим. И пусть издесь рифма далека от идеала, здесь она... Какая-то более тёплая что-ли... В общем, очередной раз спасибо вам за дружбу и за бытьё в моей жизни!!!</i>
+
                         В мыслях буря бушует
                         Заснуть не могу я весь вечер
                         Сердце восторженно бьётся
@@ -118,11 +134,13 @@
                     </p>
                 </div>
             </article>
- 
+
         </section>
     </main>
- 
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@1/tsparticles.min.js"></script>
+    <script src="auth.js"></script>
     <script>
         tsParticles.load("particles-js", {
             particles: {
@@ -146,21 +164,22 @@
                 }
             }
         });
- 
+
         // Аккордеон
         document.querySelectorAll('.poem-toggle').forEach(btn => {
             btn.addEventListener('click', () => {
                 const expanded = btn.getAttribute('aria-expanded') === 'true';
                 const body = btn.nextElementSibling;
                 const icon = btn.querySelector('.poem-icon');
- 
+
                 btn.setAttribute('aria-expanded', !expanded);
                 body.hidden = expanded;
                 icon.textContent = expanded ? '+' : '×';
                 btn.classList.toggle('open', !expanded);
             });
         });
+
+        initGate();
     </script>
 </body>
 </html>
- 

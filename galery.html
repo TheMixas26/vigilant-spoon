@@ -8,40 +8,42 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="gal_style.css">
+    <link rel="stylesheet" href="auth-style.css">
 </head>
 <body>
- 
+
     <div id="particles-js"></div>
- 
+
+    <div id="auth-overlay" class="auth-overlay">
+        <form id="auth-form" class="auth-form">
+            <p class="auth-label">Введите пароль</p>
+            <input id="auth-password" type="password" autocomplete="current-password" required autofocus>
+            <button type="submit">Войти</button>
+            <p id="auth-error" class="auth-error"></p>
+        </form>
+    </div>
+    <button id="auth-logout" class="auth-logout" hidden>🔒 выйти</button>
+
+    <div id="page-content" hidden>
     <main class="container">
         <header class="hero">
             <a class="back" href="index.html">← чайт</a>
             <h1 class="title">Галерея</h1>
             <p class="subtitle">ваших фотографий</p>
         </header>
- 
+
         <div class="grid" id="gallery">
-            <div class="cell">
-                <img src="фото.jpg" alt="подпись">
-            </div>
-            <!-- ─────────────────────────────────────────
-                 Чтобы добавить фото — скопируй блок ниже
-                 и вставь его следующим в сетку.
-                 Замени src на путь к своей картинке,
-                 alt — на подпись (необязательно).
- 
-                 <div class="cell">
-                     <img src="фото.jpg" alt="подпись">
-                 </div>
-            ───────────────────────────────────────── -->
- 
+            <!-- Ячейки добавляются автоматически скриптом после
+                 расшифровки фото — руками сюда ничего вставлять
+                 больше не нужно (см. tools/encrypt-photos.mjs). -->
         </div>
- 
+
         <p class="empty-hint" id="emptyHint">
-            Пока здесь пусто.<br>Добавь фотографии в HTML — и они появятся здесь.
+            Пока здесь пусто.<br>Добавь фотографии через скрипт шифрования — и они появятся здесь.
         </p>
     </main>
- 
+    </div>
+
     <!-- Лайтбокс -->
     <div class="lightbox" id="lightbox" hidden>
         <button class="lb-close" id="lbClose" aria-label="Закрыть">×</button>
@@ -55,8 +57,9 @@
             <a class="lb-download" id="lbDownload" download>↓ скачать</a>
         </div>
     </div>
- 
+
     <script src="https://cdn.jsdelivr.net/npm/tsparticles@1/tsparticles.min.js"></script>
+    <script src="auth.js"></script>
     <script>
         // Частицы
         tsParticles.load("particles-js", {
@@ -69,24 +72,51 @@
                 line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.15, width: 1 }
             }
         });
- 
+
         // ── Галерея ──────────────────────────────────────
         const gallery  = document.getElementById('gallery');
         const hint     = document.getElementById('emptyHint');
         const cells    = () => [...gallery.querySelectorAll('.cell img')];
- 
+
         function updateHint() {
             hint.hidden = cells().length > 0;
         }
         updateHint();
- 
+
+        // Расшифровка фото. Вызывается после ввода правильного
+        // пароля (см. initGate ниже). Каждое фото хранится в
+        // репозитории как бессмысленный бинарный .enc-файл —
+        // расшифровывается только в памяти браузера, в файл
+        // на диск ничего не сохраняется.
+        async function renderGallery(key) {
+            const manifestResp = await fetch('photos/manifest.json');
+            if (!manifestResp.ok) return; // фото ещё не добавлены — ничего страшного
+            const manifest = await manifestResp.json();
+
+            for (const item of manifest) {
+                const resp = await fetch('photos/' + item.file);
+                const buf = await resp.arrayBuffer();
+                const plain = await AUTH.decryptBuffer(key, buf);
+                const blob = new Blob([plain], { type: item.mime });
+                const url = URL.createObjectURL(blob);
+
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = item.alt || '';
+                cell.appendChild(img);
+                gallery.appendChild(cell);
+            }
+        }
+
         // Клик по картинке → открыть лайтбокс
         gallery.addEventListener('click', e => {
             const img = e.target.closest('.cell img');
             if (!img) return;
             openLightbox(cells().indexOf(img));
         });
- 
+
         // ── Лайтбокс ─────────────────────────────────────
         const lightbox   = document.getElementById('lightbox');
         const lbImg      = document.getElementById('lbImg');
@@ -95,9 +125,9 @@
         const lbClose    = document.getElementById('lbClose');
         const lbPrev     = document.getElementById('lbPrev');
         const lbNext     = document.getElementById('lbNext');
- 
+
         let current = 0;
- 
+
         function openLightbox(index) {
             current = index;
             renderLightbox();
@@ -105,12 +135,12 @@
             document.body.style.overflow = 'hidden';
             lightbox.focus();
         }
- 
+
         function closeLightbox() {
             lightbox.hidden = true;
             document.body.style.overflow = '';
         }
- 
+
         function renderLightbox() {
             const imgs = cells();
             if (!imgs.length) return;
@@ -119,27 +149,27 @@
             lbImg.alt        = img.alt;
             lbCaption.textContent = img.alt || '';
             lbDownload.href  = img.src;
- 
+
             // Стрелки: показываем только если есть куда идти
             lbPrev.style.visibility = current > 0 ? 'visible' : 'hidden';
             lbNext.style.visibility = current < imgs.length - 1 ? 'visible' : 'hidden';
         }
- 
+
         function go(dir) {
             const len = cells().length;
             current = (current + dir + len) % len;
             renderLightbox();
         }
- 
+
         lbClose.addEventListener('click', closeLightbox);
         lbPrev.addEventListener('click', () => go(-1));
         lbNext.addEventListener('click', () => go(1));
- 
+
         // Клик на фон = закрыть
         lightbox.addEventListener('click', e => {
             if (e.target === lightbox || e.target.classList.contains('lb-img-wrap')) closeLightbox();
         });
- 
+
         // Клавиатура
         document.addEventListener('keydown', e => {
             if (lightbox.hidden) return;
@@ -147,7 +177,7 @@
             if (e.key === 'ArrowLeft')   go(-1);
             if (e.key === 'ArrowRight')  go(1);
         });
- 
+
         // Свайп на мобиле
         let touchStartX = 0;
         lightbox.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
@@ -155,7 +185,12 @@
             const dx = e.changedTouches[0].clientX - touchStartX;
             if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
         });
+
+        // Вход + расшифровка галереи
+        initGate(async (key) => {
+            await renderGallery(key);
+            updateHint();
+        });
     </script>
 </body>
 </html>
- 
